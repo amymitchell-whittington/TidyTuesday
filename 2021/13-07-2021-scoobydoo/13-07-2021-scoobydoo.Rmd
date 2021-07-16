@@ -160,6 +160,7 @@ p <- ggplot(total_motives, aes (
             area=count,
             fill=motive)) +
   geom_treemap(layout = "fixed") +
+  theme(legend.position="none") +
   geom_treemap_text(layout = "fixed", place = "centre", grow = TRUE, colour = "white") +
   transition_manual(as.integer(year)) +
    ease_aes('linear') +
