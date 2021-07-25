@@ -64,7 +64,7 @@ western_states <- western_states_drought %>%
 
 COLORS = c("#F08000", "#D9490B", "#A81308")
 
-western_states %>%
+wss <- western_states %>%
   ggplot +
   geom_area(aes(valid_start, total, fill=drought_lvl)) +
   scale_fill_manual(labels = c(
@@ -85,4 +85,6 @@ western_states %>%
     plot.title = element_text(size = 14, hjust=0.5),
     plot.subtitle = element_text(hjust=0.5, size=10)
   )
+
+ggplotly(wss)
 ```
