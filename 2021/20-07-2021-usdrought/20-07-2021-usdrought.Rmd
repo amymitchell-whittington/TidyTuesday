@@ -1,0 +1,88 @@
+---
+title: "Tidy Tuesday - U.S. drought"
+author: "Amy Mitchell-Whittington"
+date: "21/07/2021"
+output: github_document
+---
+
+## U.S. Drought
+
+This week's data comes from the [U.S. Drought Monitor](https://droughtmonitor.unl.edu/DmData/DataDownload/ComprehensiveStatistics.aspx).
+
+The dataset details the drought level across U.S. states from 2001-2021. I wanted to look at the number of people who have experienced severe, extreme, and/or exceptional drought conditions over this time in the western states of the U.S.
+
+Data Reference: The U.S. Drought Monitor is jointly produced by the National Drought Mitigation Center at the University of Nebraska-Lincoln, the United States Department of Agriculture, and the National Oceanic and Atmospheric Administration. Map courtesy of NDMC.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(stringr)
+library(tidyverse)
+library(tidytuesdayR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(convertr)
+library(scales)
+library(tidyselect)
+library(plotly)
+library(plyr)
+
+drought <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-20/drought.csv')
+
+# to prevent scientific notation in graph:
+options(scipen=999)
+```
+
+
+```{r data clean, echo=FALSE, message=FALSE}
+
+# remove Puerto Rico 
+
+drought_states <- drought %>%
+  filter(state_abb != "PR") 
+
+# remove null figures 
+
+drought_states[drought_states == 0] <- NA
+
+# need to separate the western states of U.S. and remove none, D0, D1 variables
+
+western_states_drought <- drought_states %>%
+  filter(state_abb %in% c("AK", "AZ", "CA", "CO", "ID", "MT", "NV", "NM", "OR", "UT", "WA", "WY")) %>%
+  filter(drought_lvl %in% c("D2", "D3", "D4")) %>%
+  na.omit()
+
+# need to group sum pop_total by two variables 
+  
+western_states <- western_states_drought %>%
+  select(state_abb, valid_start, drought_lvl, pop_total) %>%
+  ddply(.(drought_lvl, valid_start), summarize, total = sum(pop_total)) 
+```
+
+```{r plot, echo=FALSE, message=FALSE}
+
+COLORS = c("#F08000", "#D9490B", "#A81308")
+
+western_states %>%
+  ggplot +
+  geom_area(aes(valid_start, total, fill=drought_lvl)) +
+  scale_fill_manual(labels = c(
+    "severe drought", "extreme drought", "exceptional drought"),
+    values = COLORS) +
+  scale_y_continuous( 
+    breaks = seq(0, 600000000, 10000000),
+    labels = label_number(scale = 1/1000000)) +
+  labs( 
+    title="Drought across the decades",
+    subtitle="Total number of people in U.S. western states who experienced \n severe, extreme, or exceptional drought over the past two decades.",
+    caption="data: The U.S. Drought Monitor.", 
+    y="Number of people (million)",
+    x="Year",
+    fill="Type of drought") +
+  theme(
+    plot.caption = element_text(size = 8),
+    plot.title = element_text(size = 14, hjust=0.5),
+    plot.subtitle = element_text(hjust=0.5, size=10)
+  )
+```
