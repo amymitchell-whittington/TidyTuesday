@@ -1,0 +1,120 @@
+---
+title: "Tidy Tuesday - Olympics"
+author: "Amy Mitchell-Whittington"
+date: "01/08/2021"
+output: github_document
+---
+
+## Olympic medals
+
+This week's data comes from [Kaggle](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results?select=noc_regions.csv).
+
+This is an historical dataset on the modern Olympic Games. As I went through the list of sports, I was surprised to see Tug-Of-War, so I decided to focus on that for my dataset.  
+
+![ ](https://media.giphy.com/media/2xPJgvjnr456xOQTmW/giphy.gif)
+
+The event ran in five straight Games between 1900-1920.  
+
+#### [The rules](https://olympic.ca/2014/07/22/olympic-tug-of-war-and-its-controversial-demise/)
+
+* The first team to pull the other team over a line six feet from their starting point was named the winner. 
+* Matches had a five minute time limit. If neither team was pulled across the line, then the team that got the other team closest to that point was declared the winner.
+
+The most successful country was Great Britain, which won five medals in total.  
+
+At the 1908 Games, held in London, three of five the competing teams were police departments - Liverpool Police, City of London Police, and Metro Police "K" Division. The other two teams were United States and Sweden.
+
+According to the [Tug of War Association London](http://tugofwar.co.uk/olympics-history), the American team protested it's first-round loss to the Liverpool Police team, claiming their service boots were "...so heavy in fact that it was only with great effort that they could lift their feet from the ground". The protest was dismissed, and the American team withdrew from the competition.  
+
+The three police teams representing Great Britain went on to win gold, silver, and bronze that year.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(stringr)
+library(tidyverse)
+library(tidytuesdayR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(convertr)
+library(dplyr)
+library(RColorBrewer)
+library(gganimate)
+library(tweenr)
+library(forcats)
+library(scales)
+
+olympics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-27/olympics.csv')
+
+medals <- olympics %>%
+  filter(medal != "NA")
+
+head(olympics)
+
+```
+
+```{r tug-of-war, echo=FALSE, message=FALSE}
+
+tug <- olympics %>%
+  select(year, sport, medal, team) %>%
+  filter(sport=="Tug-Of-War", medal != "NA") %>%
+group_by(medal, team) %>%
+  unique()
+
+#to change the order of the medals
+
+tug$medal <- factor(tug$medal, levels = c("Gold", "Silver", "Bronze"))
+
+```
+
+
+```{r tug plot, fig.width = 10, fig.height = 8, fig.align='center', dpi=144, echo=FALSE}
+
+tug %>% 
+  ggplot(aes(x = team, y = medal)) +
+  geom_point(tug %>% 
+               filter(medal == "Gold"), 
+              mapping = aes( y = 1), 
+             size = 15, 
+             color = "gold", 
+             show.legend = FALSE) +
+ geom_text(tug %>% 
+               filter(medal == "Gold"),
+             mapping = aes(label = year, y = 1)) +
+  geom_point(tug %>% 
+               filter(medal == "Silver"), 
+             mapping = aes(y = 2), 
+             size = 15, color = "#d6d6d6", 
+             show.legend = FALSE) +
+  geom_text(tug %>% 
+               filter(medal == "Silver"),
+            mapping = aes(label = year, y = 2)) +
+  geom_point(tug %>% 
+               filter(medal == "Bronze"), 
+              mapping = aes(y = 3), 
+             size = 15, 
+             color = "#cd7f32", 
+             show.legend = FALSE) +
+  geom_text(tug %>% 
+               filter(medal == "Bronze"),
+            mapping = aes(label = year, y = 3)) +
+  coord_flip() +
+  labs(
+    title = "Medals won in Tug-Of-War competitions between 1900-1920",
+    y=NULL,
+    x=NULL,
+    legend = "Type of medal", 
+    caption = "Data: Kaggle/TidyTuesday"
+  ) + 
+  theme_minimal() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_blank(),
+        axis.text.x = element_blank()) 
+
+```
+
+
+
