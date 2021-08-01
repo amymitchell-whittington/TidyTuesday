@@ -69,7 +69,7 @@ tug$medal <- factor(tug$medal, levels = c("Gold", "Silver", "Bronze"))
 ```
 
 
-```{r tug plot, fig.width = 10, fig.height = 8, fig.align='center', dpi=144, echo=FALSE}
+```{r tug plot, fig.width = 10, fig.height = 8, dpi=144, echo=FALSE}
 
 tug %>% 
   ggplot(aes(x = team, y = medal)) +
