@@ -101,10 +101,10 @@ tug %>%
             mapping = aes(label = year, y = 3)) +
   coord_flip() +
   labs(
-    title = "Medals won in Tug-Of-War competitions between 1900-1920",
+    title = "Olympic Tug-of-War medals won by team and year",
+    subtitle = "The Tug-of-War event appeared in five editions of the Olympic Games from 1900 to 1920.",
     y=NULL,
     x=NULL,
-    legend = "Type of medal", 
     caption = "Data: Kaggle/TidyTuesday"
   ) + 
   theme_minimal() +
