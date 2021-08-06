@@ -1,0 +1,217 @@
+---
+title: "Tidy Tuesday - Olympics"
+author: "Amy Mitchell-Whittington"
+date: "27/07/2021"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(stringr)
+library(tidyverse)
+library(tidytuesdayR)
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+library(convertr)
+library(dplyr)
+library(RColorBrewer)
+library(gganimate)
+library(tweenr)
+library(forcats)
+library(scales)
+
+olympics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-27/olympics.csv')
+
+medals <- olympics %>%
+  filter(medal != "NA")
+
+head(olympics)
+```
+
+156 medals 
+3578 competitions
+only in summer Olympics
+seven Games(minus 1916, 1940, 1944)
+1916 (WW) 1940 & 1944 (WW)
+
+
+which countries won the most medals in art categories over the years?
+-use a graph that animates for which countries won most gold, silver, bronze each year.
+
+``` {r data clean, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE)
+
+# look at the arts categories
+
+art_comp <- olympics %>%
+  select(year, sport, event, sex, medal,team) %>%
+  filter(sport == "Art Competitions",
+         medal != "NA") %>%
+  mutate_at("event", str_replace, "Art Competitions Mixed", "") %>% #to remove undesired characters when they're constant.
+  arrange(team)
+
+art_country <- art_comp %>%
+  select(year, medal, team) %>%
+  group_by(year, medal, team) %>%
+  dplyr::summarize(total_medals = n()) %>% # to calculate total medals by year and team 
+  ungroup() %>%
+  arrange(-total_medals) 
+
+art_country$medal <- factor(art_country$medal, levels = c("Gold", "Silver", "Bronze"))
+
+```
+
+
+``` {r art plot, include=FALSE}
+
+l <-  ggplot(art_country) +
+  geom_linerange(aes(
+              x= team, 
+              ymin = 0, ymax = total_medals, colour=medal),
+              position = position_dodge(width=1)) +
+  scale_y_continuous(limits=c(0,6)) +
+  geom_point(aes ( x =team, y = total_medals, colour = medal),
+             position = position_dodge(width = 1)) +
+  scale_color_manual(values = c("#cc9933", "#999999", "#996600")) +
+  coord_flip() +
+  facet_wrap(~year, ncol=4, scales = "free_y") +
+  labs(
+    title = "Medals won by country in the Olympic Arts Competitions from 1912-1948",
+    y=NULL,
+    x=NULL,
+    legend = "Type of medals", 
+    caption = "Data: Kaggle/TidyTuesday."
+  ) + 
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+```
+
+```{r tug data clean, include=TRUE}
+
+# tug was showing as a tibble, not a dataframe, so assigning it recycled values (gold=3, silver=2, bronze=1) for the medals to work in a graph format didn't work. 
+#have to create a non-tibble version to recycle the value.
+
+
+tug <- olympics %>%
+  select(year, sport, medal, team) %>%
+  filter(sport=="Tug-Of-War", medal != "NA") %>%
+group_by(medal, team) %>%
+  unique()
+
+tug_df <- as.data.frame(tug)
+
+
+# tug was showing as a tibble, not a dataframe, so assigning it recycled values (gold=3, silver=2, bronze=1) for the medals to work in a graph format didn't work. 
+#have to create a non-tibble version to recycle the value.
+
+tug_df <- as.data.frame(tug)
+
+#tug_df <- tug_df %>%
+ # mutate(medal_count=case_when(
+  #  .$medal=="Gold" ~ 3,
+   # .$medal=="Silver" ~ 2,
+    #.$medal=="Bronze" ~ 1))
+
+#to change the order of the medals
+
+tug_df$medal <- factor(tug_df$medal, levels = c("Gold", "Silver", "Bronze"))
+
+tug_1908 <- tug %>%
+  filter(year == "1908") %>%
+  dplyr::summarize(total_medals = n()) 
+
+
+```
+
+```{r plot}
+knitr::opts_chunk$set(echo=TRUE)
+
+
+tug_df %>% 
+  ggplot(aes(x = team, y = medal)) +
+  geom_point(tug_df %>% 
+               filter(medal == "Gold"), 
+              mapping = aes( y = 1), 
+             size = 15, 
+             color = "gold", 
+             show.legend = FALSE) +
+ geom_text(tug_df %>% 
+               filter(medal == "Gold"),
+             mapping = aes(label = year, y = 1)) +
+  geom_point(tug_df %>% 
+               filter(medal == "Silver"), 
+             mapping = aes(y = 2), 
+             size = 15, color = "#d6d6d6", 
+             show.legend = FALSE) +
+  geom_text(tug_df %>% 
+               filter(medal == "Silver"),
+            mapping = aes(label = year, y = 2)) +
+  geom_point(tug_df %>% 
+               filter(medal == "Bronze"), 
+              mapping = aes(y = 3), 
+             size = 15, 
+             color = "#cd7f32", 
+             show.legend = FALSE) +
+  geom_text(tug_df %>% 
+               filter(medal == "Bronze"),
+            mapping = aes(label = year, y = 3)) +
+  coord_flip() +
+  labs(
+    title = "Medals won by participants in the Tug-Of-War Competitions between 1912-1948",
+    y=NULL,
+    x=NULL,
+    legend = "Type of medals", 
+    caption = "Data: Kaggle/TidyTuesday."
+  ) + 
+  theme_minimal() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_blank(),
+        axis.text.x = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5))
+
+```
+
+
+
+
+
+
+
+plot <- ggplot(tug_df) +
+  geom_point(aes ( x =team, y = medal_count, colour = medal),
+             size = 10,
+             position = position_dodge(width = 1)) +
+  scale_color_manual(values = c("#cc9933", "#999999", "#996600")) +
+  geom_linerange(aes(
+              x= team, 
+              ymin = 0, ymax = medal_count, colour=medal),
+              position = position_dodge(width=1)) +
+  coord_flip() +
+  labs(
+    title = "Medal winners in the Tug-Of-War Competitions between 1912-1948",
+    y=NULL,
+    x=NULL,
+    legend = "Type of medals", 
+    caption = "Data: Kaggle/TidyTuesday."
+  ) + 
+  theme_minimal() +
+  theme(panel.border = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.line = element_blank(),
+        axis.text.x = element_blank()) +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+
+show(plot)
+
+
+geom_linerange(aes(
+              x= team, 
+              ymin = 0, ymax = medal_count, colour=medal),
+              position = position_dodge(width=1)) +
+  scale_y_continuous(limits=c(0,3)) +
+```

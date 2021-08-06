@@ -69,7 +69,7 @@ tug$medal <- factor(tug$medal, levels = c("Gold", "Silver", "Bronze"))
 ```
 
 
-```{r tug plot, fig.width = 10, fig.height = 8, dpi=144, echo=FALSE}
+```{r tug plot, echo=FALSE}
 
 tug %>% 
   ggplot(aes(x = team, y = medal)) +
@@ -100,6 +100,7 @@ tug %>%
                filter(medal == "Bronze"),
             mapping = aes(label = year, y = 3)) +
   coord_flip() +
+  facet_grid(scales="free") +
   labs(
     title = "Olympic Tug-of-War medals won by team and year",
     subtitle = "The Tug-of-War event appeared in five editions of the Olympic Games from 1900 to 1920.",
