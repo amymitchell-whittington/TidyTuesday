@@ -9,7 +9,7 @@ output: github_document
 
 This week's data comes from [Kaggle](https://www.kaggle.com/heesoo37/120-years-of-olympic-history-athletes-and-results?select=noc_regions.csv).
 
-This is an historical dataset on the modern Olympic Games. As I went through the list of sports, I was surprised to see Tug-Of-War, so I decided to focus on that for my dataset.  
+This is an historical dataset on the modern Olympic Games. As I went through the list of sports, I was surprised to see Tug-Of-War, so I decided to focus on that for my dataset. Code: [</>](https://github.com/amymitchell-whittington/TidyTuesday/blob/main/2021/27-07-2021-olympics/27-07-2021-olympics.Rmd)
 
 ![ ](https://media.giphy.com/media/2xPJgvjnr456xOQTmW/giphy.gif)
 

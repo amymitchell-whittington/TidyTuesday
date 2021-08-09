@@ -19,20 +19,16 @@ library(extrafont)
 
 athletes <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-08-03/athletes.csv')
 
+olympics <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2021/2021-07-27/olympics.csv')
+
+medals <- olympics %>%
+  filter(medal != "NA")
+
 ```
 
 ```{r explore, include=FALSE}
 
-# number of sports each athlete won a medal in during the 1980 Paralympics
-
-paralympics_1980 <- athletes %>%
-  filter(year == "1980") %>%
-  select(athlete, type) %>%
-  group_by(athlete) %>%
-  summarise(count = n_distinct(type)) %>%
-  filter(count > 1)
-
-# test above script to apply to entire athletes dataset
+# number of sports each athlete won a medal across the Paralympics 1980-2016
 
 paralympics <- athletes %>%
   group_by(year, athlete) %>%
@@ -59,7 +55,39 @@ paralympics_together <- left_join(paralympics_athlete_year, athlete_numbers, by=
   mutate(
     percentage = athletes_by_sports/total_athletes*100
   ) %>%
-  round(digits = 2) 
+  round(digits = 2)
+
+# total number of athletes who've won more than one medal across the Paralympic Games from 1980-2016
+
+paralmpics_number <- paralympics %>%
+  group_by(athlete) %>%
+  summarise(count = n_distinct(year))
+
+#####
+
+#% of Olympic athletes who won medals in more than one sport each Games
+
+olympics_athletes <- medals %>%
+  group_by(year, name) %>%
+  summarise(count = n_distinct(sport)) %>%
+  filter(count > 1,
+         year >= "1980")
+
+olympics_athlete_year <- olympics_athletes %>%
+  group_by(year) %>%
+  summarise(by_year = n_distinct(name))
+
+olympics_total <- medals %>%
+  group_by(year) %>%
+  summarise(total_athletes = n_distinct(name)) %>%
+  filter(year >= "1980")
+
+olympics_together <- left_join(olympics_athlete_year, olympics_total, by="year") %>%
+  mutate(
+    percentage = by_year/total_athletes*100
+  ) %>%
+  round(digits = 2) %>%
+  select(year, percentage)
 
 ```
 
@@ -94,4 +122,5 @@ ggplot(paralympics_together,
         panel.grid.minor = element_blank())
 
 ```
+
 
