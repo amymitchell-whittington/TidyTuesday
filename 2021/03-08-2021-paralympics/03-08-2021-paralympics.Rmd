@@ -42,7 +42,7 @@ paralympics_athlete_year <- paralympics %>%
   group_by(year) %>%
   summarise(athletes_by_sports = n_distinct(athlete))
 
-#number of athletes who competed by year 
+#total number of athletes who competed by year 
 
 athlete_numbers <- athletes %>%
   group_by(year) %>%
@@ -88,6 +88,18 @@ olympics_together <- left_join(olympics_athlete_year, olympics_total, by="year")
   ) %>%
   round(digits = 2) %>%
   select(year, percentage)
+
+## UK - total number of athletes who've won medals in more than one sport in the 1980-2016 Paralympic Games
+
+paralympics_GB <- athletes %>%
+  group_by(year, athlete) %>%
+  filter(country == "Great Britain") %>%
+  summarise(count = n_distinct(type)) %>%
+  filter(count > 1,
+         athlete != "Great Britain") %>%
+  ungroup() %>%
+  group_by(athlete) %>%
+  summarise(count = n_distinct(year))
 
 ```
 
