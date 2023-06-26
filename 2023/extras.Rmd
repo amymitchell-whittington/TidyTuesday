@@ -1,0 +1,95 @@
+
+
+UFO sightings data June 13, 2023
+
+```{r wrangle, echo=FALSE, dpi=300}
+
+
+#as above, but with lon lat co-ords for mapping
+ufo_aus_year_mapping <- ufo_sightings %>%
+  filter(country == "au") %>%
+  mutate(shape = case_when(
+    ufo_shape %in% c("cylinder", "cigar", "dome", "circle", "teardrop", "fireball", "egg", "sphere", "disk", "round", "oval", "crescent") ~ "Round",
+    ufo_shape %in% c("diamond", "hexagon", "rectangle", "chevron", "triangle", "cross", "pyramid", "delta", "cone") ~ "Angled",
+    ufo_shape %in% c("light", "flash", "changed", "formation", "changing", "flare") ~ "Flash or changing light")) %>%
+  select(shape, longitude, latitude) %>%
+   filter(shape != "NA")
+
+#finding ufo_shape frequency by decade
+shape_by_decade <- ufo_sightings %>%
+  filter(country == "au") %>%
+mutate(year = as.numeric(format(as.Date(ufo_shape_aus$date_time, format = "%m/%d/%Y"),"%Y"))) %>%
+  mutate(decade = floor(year/10)*10) %>%
+  select(ufo_shape, decade) %>%
+  filter(ufo_shape != "NA",
+         ufo_shape != "unknown",
+         ufo_shape != "other",
+         decade == "2000") %>%
+  count(decade, ufo_shape)
+
+#by shape and year, not segmented into shape grouping 
+shape_by_count <- ufo_sightings %>%
+  filter(country == "au") %>%
+  mutate(year = as.numeric(format(as.Date(ufo_shape_aus$date_time, format = "%m/%d/%Y"),"%Y"))) %>%
+  mutate(decade = floor(year/10)*10) %>%
+ group_by(ufo_shape, year) %>%
+  count(ufo_shape) %>%
+  arrange(desc(n)) %>%
+  filter(ufo_shape != "other",
+         ufo_shape != "unknown",
+         ufo_shape != "NA")
+
+#sort UFO shapes sighted in Australia into three categories and sort by decade:
+
+ufo_aus <- ufo_sightings %>%
+  filter(country == "au") %>%
+  mutate(shape = case_when(
+    ufo_shape %in% c("cylinder", "cigar", "dome", "circle", "teardrop", "fireball", "egg", "sphere", "disk", "round", "oval", "crescent") ~ "Round",
+    ufo_shape %in% c("diamond", "hexagon", "rectangle", "chevron", "triangle", "cross", "pyramid", "delta", "cone") ~ "Geometric",
+    ufo_shape %in% c("light", "flash", "changed", "formation", "changing", "flare") ~ "Shapeless or changing light")) %>%
+  select(date_time, shape) %>%
+  mutate(year = as.numeric(format(as.Date(ufo_shape_aus$date_time, format = "%m/%d/%Y"),"%Y"))) %>%
+  mutate(decade = floor(year/10)*10) %>%
+   filter(shape != "NA",
+          shape !="other") %>%
+  count(shape, decade)
+
+
+
+```
+
+```{rplot with map, echo=FALSE, dpi=300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+oz_states <- ozmaps::ozmap_states
+
+ggplot(oz_states) + 
+  geom_sf() + 
+  coord_sf()
+
+ggplot() +
+  geom_sf(data = oz_states, colour = "black", fill = NA) + 
+  geom_point(data = ufo_aus_year_mapping, mapping = aes(x = longitude, y = latitude, colour = shape)) + 
+  scale_colour_manual(name = "UFO Shape", values = c("green3", "red4", "deepskyblue")) +
+  coord_sf() + 
+  facet_wrap(~shape) +
+  theme_void() +
+  guides(fill=guide_legend(title=NULL)) +
+  theme(
+    plot.title = element_markdown(size = 13, colour = "black", face = "bold", hjust = 0.5),
+    plot.subtitle = element_text(size = 8, colour = "black", hjust = 0.5),
+    plot.caption = element_text(size = 6, colour = "black", face = "italic", hjust = 0.1),
+    plot.background = element_rect(fill = "ivory"),
+    legend.position = "none") +
+   labs(title = "Seeing Shapes in the Australian Sky",
+       subtitle = "More than 500 UFO sightings in Australia have been recorded since 1960, according to data from\nthe National UFO Reporting Center. were most commonly spotted\n along the east coast of Australia...",
+       caption = "Data source: National UFO Reporting Center.")
+
+
+#legend.position = c(.9, .2)) 
+#    legend.title = element_text(face = "bold", colour = "black", size = 7),
+    legend.text = element_text(colour = "black", size = 7)) +
+
+```
+
+```

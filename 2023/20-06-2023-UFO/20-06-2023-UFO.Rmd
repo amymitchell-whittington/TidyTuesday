@@ -1,0 +1,83 @@
+---
+title: "Tidy Tuesday - UFO Sightings"
+author: "Amy Mitchell-Whittington"
+date: '20-06-2023'
+output: github_document
+---
+
+## UFO Sightings
+
+Data this week comes from [NUFORC](https://nuforc.org/) and includes more than 80,000 recorded UFO sightings around the world.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(tidyverse)
+library(tidytuesdayR)
+library(ggplot2)
+library(ggtext)
+library(lubridate)
+library(dplyr)
+library(mapdata)
+library(sf)
+library(ozmaps)
+library(readr)
+
+ufo_sightings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-06-25/ufo_sightings.csv")
+
+```
+
+```{r explore, echo=FALSE, dpi=300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+#sort UFO shapes sighted in Australia into three categories and sort by decade:
+
+ufo_aus_year <- ufo_sightings %>%
+  filter(country == "au") %>%
+  mutate(shape = case_when(
+    ufo_shape %in% c("cylinder", "cigar", "dome", "circle", "teardrop", "fireball", "egg", "sphere", "disk", "round", "oval", "crescent") ~ "Round",
+    ufo_shape %in% c("diamond", "hexagon", "rectangle", "chevron", "triangle", "cross", "pyramid", "delta", "cone") ~ "Angled",
+    ufo_shape %in% c("light", "flash", "changed", "formation", "changing", "flare") ~ "Flash or changing light")) %>%
+  select(date_time, shape, longitude, latitude) %>%
+  mutate(year = as.numeric(format(as.Date(date_time, format = "%m/%d/%Y"),"%Y"))) %>%
+   filter(shape != "NA",
+          shape !="other") %>%
+  count(shape, year)
+
+```
+
+
+```{r plot, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+ufo_aus_year %>%
+  ggplot(aes(x = year, y = n)) +
+  geom_line(aes(color = shape)) +
+  scale_y_continuous(breaks = c(seq(from = 0, to = 26, by = 2))) +
+    scale_x_continuous(breaks = c(seq(from = 1960, to = 2015, by = 5))) +
+  scale_colour_manual(name="UFO shape",
+                        breaks = c("Round", "Flash or changing light", "Angled"),
+                        values = c("magenta", "yellow", "deepskyblue")) +
+  theme_classic() +
+  theme(plot.title = element_markdown(size = 13, colour = "lawngreen", face = "bold", hjust = .5),
+        plot.subtitle = element_text(size = 7, colour = "lawngreen", hjust = .5),
+        plot.caption = element_text(size = 6, colour = "lawngreen", face = "italic"),
+        panel.background = element_rect(fill = "black"),
+        plot.background = element_rect(fill = "black"),
+        legend.background = element_rect(colour = NA, fill = NA),
+        panel.grid.major.y = element_line( size=.1, color="grey"),
+                 panel.grid.major.x = element_blank(),
+        axis.title.x = element_text(colour = "lawngreen"),
+        axis.text.x = element_text(colour = "lawngreen"),
+        axis.title.y = element_text(colour = "lawngreen"),
+        axis.text.y = element_text(colour = "lawngreen"),
+        legend.title = element_text(face = "bold", colour = "lawngreen"), 
+        legend.text = element_text(colour = "lawngreen"),
+        legend.position = c(.2, .6)) +
+  labs(title = "Seeing Shapes in the Australian Sky",
+       subtitle = "A summary of 462 reported UFO sightings across Australia since 1960.",
+       caption = "Data source: National UFO Reporting Center.",
+       x = "Year",
+       y = "Number of sightings")
+
+```
