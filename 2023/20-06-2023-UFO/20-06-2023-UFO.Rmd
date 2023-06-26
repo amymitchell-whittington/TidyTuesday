@@ -47,7 +47,7 @@ ufo_aus_year <- ufo_sightings %>%
 ```
 
 
-```{r plot, echo=FALSE, message=FALSE}
+```{r plot, echo=FALSE, message=FALSE, dpi=300}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
 ufo_aus_year %>%
