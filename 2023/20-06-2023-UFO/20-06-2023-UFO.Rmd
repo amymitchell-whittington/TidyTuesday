@@ -47,8 +47,8 @@ ufo_aus_year <- ufo_sightings %>%
 ```
 
 
-```{r plot, echo=FALSE, message=FALSE, dpi=300}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```{r plot, echo=FALSE, message=FALSE, dpi = 300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
 ufo_aus_year %>%
   ggplot(aes(x = year, y = n)) +
@@ -59,8 +59,8 @@ ufo_aus_year %>%
                         breaks = c("Round", "Flash or changing light", "Angled"),
                         values = c("magenta", "yellow", "deepskyblue")) +
   theme_classic() +
-  theme(plot.title = element_markdown(size = 13, colour = "lawngreen", face = "bold", hjust = .5),
-        plot.subtitle = element_text(size = 7, colour = "lawngreen", hjust = .5),
+  theme(plot.title = element_markdown(size = 13, colour = "lawngreen", face = "bold"),
+        plot.subtitle = element_text(size = 7, colour = "lawngreen"),
         plot.caption = element_text(size = 6, colour = "lawngreen", face = "italic"),
         panel.background = element_rect(fill = "black"),
         plot.background = element_rect(fill = "black"),
