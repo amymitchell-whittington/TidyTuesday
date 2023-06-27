@@ -32,8 +32,8 @@ df <- safi_data %>%
   mutate(months_lack_food = gsub("July", "Jul", months_lack_food)) %>%
   mutate(months_lack_food = gsub("June", "Jun", months_lack_food)) %>%
   mutate(months_lack_food = gsub("Sept", "Sep", months_lack_food)) %>%
-  mutate(season = ifelse(months_lack_food %in% c("Jan", "Feb", "Mar", "Oct", "Nov", "Dec"), "Hot and Humid Season", "Cool and Dry Season")) %>%
-  group_by(season, months_lack_food, village) %>%
+  #mutate(season = ifelse(months_lack_food %in% c("Jan", "Feb", "Mar", "Oct", "Nov", "Dec"), "Hot and Humid Season", "Cool and Dry Season")) %>%
+  group_by(months_lack_food, village) %>%
   summarise(count = n()) %>%
   filter(months_lack_food != "none")
 
@@ -53,7 +53,7 @@ df %>%
          panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_line( size=.1, color="ivory3")) +
   scale_fill_manual(values = c("blue4", "green4", "orange")) +
-  labs(title = "Food insecurity in East Africa",
+  labs(title = "Food insecurity in Mozambique and Tanzania",
        subtitle = "Between 2016-2017, 131 households from three villages across Mozambique and Tanzania were asked about their living conditions\nas part of a survey run by the Studying African Farmer-Led Irrigation group. Almost three quarters of respondents said\nthey'd faced at least one month of not having enough food to feed their household in the previous year.",
        caption = "Data source: SAFI (Studying African Farmer-Led Irrigation) survey.",
        x = "Month",
