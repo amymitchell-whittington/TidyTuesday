@@ -1,6 +1,11 @@
 # TidyTuesday
 This repository contains the R code used to create my visualisations for the weekly #TidyTuesday challenge. TidyTuesday is a weekly R data project. 
 
+## 27-06-20213: U.S. populated places
+
+![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/27-06-2023-USpopulatedplaces/27-06-2023USpopulatedplaces_files/figure-gfm/plot-1.png)
+
+
 ## 20-06-20213: UFO sightings
 
 ![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/20-06-2023-UFO/20-06-2023-UFO_files/figure-gfm/plot-1.png)
