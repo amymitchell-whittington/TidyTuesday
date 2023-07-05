@@ -1,0 +1,77 @@
+---
+title: "Tidy Tuesday - U.S. Populated Places"
+author: "Amy Mitchell-Whittington"
+date: '27-06-2023'
+output: github_document
+---
+
+## US Populated Places
+
+Data this week comes from the [National Map Staged Products Directory](https://prd-tnm.s3.amazonaws.com/index.html?prefix=StagedProducts/GeographicNames/) from the [US Board of Geographic Names.](https://www.usgs.gov/us-board-on-geographic-names/download-gnis-data)
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(ggplot2)
+library(tidyr)
+library(ggtext)
+library(lubridate)
+library(dplyr)
+library(readr)
+library(maps)
+library(mapdata)
+library(ggrepel)
+library(usmap)
+
+us_place_names <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-06-27/us_place_names.csv')
+us_place_history <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-06-27/us_place_history.csv')
+
+data <- us_place_names%>%
+  left_join(us_place_history)
+
+```
+
+```{r explore, echo=FALSE, dpi=300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+roadtrip <- data %>%
+  filter(state_name %in% c("Arizona", "California", "Utah", "Nevada", "Oregon"),
+         history != "NA",
+         feature_name %in% c("Las Vegas", "Death Valley Junction", "South Lake Tahoe", "Portland", "Redwood", "Big Sur", "Los Angeles", "Grand Canyon", "Bryce Canyon City")) 
+
+roadtrip_lonlat <- roadtrip %>%
+  select(prim_lat_dec, prim_long_dec, feature_name, county_name) %>%
+  rename(lat = prim_lat_dec, lon = prim_long_dec) %>%
+    unite("label", county_name:feature_name, sep = " / ")
+
+label <- roadtrip_lonlat$label
+  
+```
+
+
+```{r plot, echo=FALSE, message=FALSE, dpi = 300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+transformed_data <- usmap_transform(roadtrip_lonlat)
+
+plot_usmap(include = c("CA", "AZ", "UT", "NV", "OR"),
+             labels = TRUE, label_color = "cornsilk",
+                  fill = "cornsilk", alpha = 0.25, color = "darkcyan", linewidth = 1) + 
+  ggrepel::geom_label_repel(data = transformed_data,
+             aes(x = x, y = y, label = label),
+             size = 2, alpha = 0.8, 
+             fill = "cornsilk",
+             label.size = 0.5) +
+   geom_point(data = transformed_data,
+             aes(x = x, y = y),
+             color = "purple", alpha = 2) +
+    labs(title = "The RV honeymoon circuit",
+         subtitle = "A map of all the U.S. counties / landmarks our friends Ariella\nand Adrian are visiting in an RV for their honeymoon.",
+      caption = "Source: US Board of Geographic Names.") +
+  theme(plot.title = element_markdown(size = 13, colour = "cornsilk", face = "bold"),
+        plot.subtitle = element_text(size = 6, colour = "cornsilk"),
+        plot.caption = element_text(size = 6, colour = "cornsilk", face = "italic"),
+        panel.background = element_rect(fill = "darkcyan"),
+        plot.background = element_rect(fill = "darkcyan"))
+```
+
