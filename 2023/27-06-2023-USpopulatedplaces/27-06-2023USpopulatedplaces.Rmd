@@ -52,6 +52,8 @@ label <- roadtrip_lonlat$label
 ```{r plot, echo=FALSE, message=FALSE, dpi = 300}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 
+#2100x 500
+ 
 transformed_data <- usmap_transform(roadtrip_lonlat)
 
 plot_usmap(include = c("CA", "AZ", "UT", "NV", "OR"),
@@ -65,13 +67,15 @@ plot_usmap(include = c("CA", "AZ", "UT", "NV", "OR"),
    geom_point(data = transformed_data,
              aes(x = x, y = y),
              color = "purple", alpha = 2) +
+    coord_cartesian(expand = FALSE, clip = "off") +
     labs(title = "The RV honeymoon circuit",
-         subtitle = "A map of all the U.S. counties / landmarks our friends\nare visiting in an RV for their honeymoon.",
+         subtitle = "A map of all the U.S. counties / landmarks our friends are visiting in an RV for their honeymoon.",
       caption = "Source: US Board of Geographic Names.") +
-  theme(plot.title = element_markdown(size = 13, colour = "cornsilk", face = "bold"),
-        plot.subtitle = element_text(size = 6, colour = "cornsilk"),
+  theme(plot.title = element_markdown(size = 13, colour = "cornsilk", face = "bold", hjust = 0.5),
+        plot.subtitle = element_text(size = 7, colour = "cornsilk", hjust = 0.5),
         plot.caption = element_text(size = 6, colour = "cornsilk", face = "italic"),
-        panel.background = element_rect(fill = "darkcyan"),
         plot.background = element_rect(fill = "darkcyan"))
+
+
 ```
 
