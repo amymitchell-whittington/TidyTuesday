@@ -3,7 +3,7 @@ This repository contains the R code used to create my visualisations for the wee
 
 ## 04-07-2023: U.S. historical markers 
 
-![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/04-07-2023-historicmarkers/27-06-2023USpopulatedplaces_files/figure-gfm/plot-1.png
+![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/04-07-2023-historicmarkers/27-06-2023USpopulatedplaces_files/figure-gfm/plot-1.png)
 
 ## 27-06-2023: U.S. populated places
 
