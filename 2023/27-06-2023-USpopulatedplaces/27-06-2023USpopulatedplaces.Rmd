@@ -67,7 +67,7 @@ plot_usmap(include = c("CA", "AZ", "UT", "NV", "OR"),
    geom_point(data = transformed_data,
              aes(x = x, y = y),
              color = "purple", alpha = 2) +
-    coord_cartesian(expand = FALSE, clip = "off") +
+   coord_cartesian(expand = FALSE, clip = "on") +
     labs(title = "The RV honeymoon circuit",
          subtitle = "A map of all the U.S. counties / landmarks our friends are visiting in an RV for their honeymoon.",
       caption = "Source: US Board of Geographic Names.") +

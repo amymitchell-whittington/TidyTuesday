@@ -12,8 +12,6 @@ Data this week comes from [NUFORC](https://nuforc.org/) and includes more than 8
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 
-library(tidyverse)
-library(tidytuesdayR)
 library(ggplot2)
 library(ggtext)
 library(lubridate)
@@ -24,6 +22,7 @@ library(ozmaps)
 library(readr)
 
 ufo_sightings <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-06-25/ufo_sightings.csv")
+
 
 ```
 
