@@ -1,0 +1,108 @@
+---
+title: "Tidy Tuesday - GPT Detectors"
+author: "Amy Mitchell-Whittington"
+date: '27-06-2023'
+output: github_document
+---
+
+## GPT Detectors
+
+The data this week comes from Simon Couch's [detectors R package](https://github.com/simonpcouch/detectors/), containing predictions from various GPT detectors. The data is based on the pre-print: [GPT Detectors Are Biased Against Non-Native English Writers](https://arxiv.org/abs/2304.02819). Weixin Liang, Mert Yuksekgonul, Yining Mao, Eric Wu, James Zou. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+library(readr)
+library(emojifont)
+
+library(waffle)
+
+detectors <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-07-18/detectors.csv')
+
+```
+
+```{r explore, echo=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+pred_native <- detectors %>%
+    summarize(n = n(), .by = c(".pred_class", "native")) %>%
+  filter(!is.na(native), native == "Yes") %>% #NA under native column indicates copy was written by AI
+  mutate(native_English_text = round(n/sum(n)*100)) %>%
+  rename(predicted_class = ".pred_class") 
+
+pred_nonnative <- detectors %>%
+    summarize(n = n(), .by = c(".pred_class", "native")) %>%
+  filter(!is.na(native), native == "No") %>%
+  mutate(non.native_English_text = round(n/sum(n)*100)) %>%
+    rename(predicted_class = ".pred_class")
+
+pred_ai <- detectors %>%
+    summarize(n = n(), .by = c(".pred_class", "native")) %>%
+  filter(is.na(native)) %>%
+  mutate(AI_text = round(n/sum(n)*100)) %>%
+  rename(predicted_class = ".pred_class")
+
+#combining each dataframe into one in order to facet later on.
+
+all_pred2 <- left_join(pred_native, pred_nonnative, by = "predicted_class") %>%
+  left_join(pred_ai, by = "predicted_class") %>%
+  select(predicted_class, native_English_text, non.native_English_text, AI_text)
+
+  #only human samples
+
+human_pred2 <- left_join(pred_native, pred_nonnative, by = "predicted_class") %>%
+  select(predicted_class, native_English_text, non.native_English_text)
+
+#to reformat data by changing from a "wide" format with each variable in its own column to a "long" format, to use one column for measures and another for the percent classification for each row.
+
+gpt2datalong <- gather(all_pred2, key="measure", value="value", c("native_English_text", "non.native_English_text", "AI_text"))
+
+gpt2datalong$measure <- factor(gpt2datalong$measure, levels=c("native_English_text", "non.native_English_text", "AI_text"))
+
+  #same as above but with only human writing samples
+
+human_predlong <- gather(human_pred2, key="measure", value="value", c("native_English_text", "non.native_English_text"))
+
+human_predlong$measure <- factor(human_predlong$measure, levels=c("native_English_text", "non.native_English_text"))
+
+#to change the title in the facetted graph:
+
+human_predlong$measure <- factor(human_predlong$measure, levels = c("native_English_text", "non.native_English_text"), 
+                  labels = c("native English samples", "non-native English samples"))
+
+
+```
+
+
+```{r plot, echo=FALSE, message=FALSE, dpi = 300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+#Human only
+
+ggplot(human_predlong, aes(values = value, fill = predicted_class)) +
+geom_waffle(rows = 5, na.rm = FALSE, show.legend = TRUE, flip = FALSE, colour = "white") +
+  facet_wrap(~measure) +
+   theme(panel.spacing.x = unit(0, "npc")) +
+  theme(strip.text.x = element_text(hjust = 0.5)) +
+  coord_equal() +
+  theme_void() +
+  guides(fill = guide_legend(reverse=TRUE)) +
+  scale_fill_manual(values = c("sienna3", "royalblue")) +
+  labs(
+    title = "Can GPT detectors tell what is written by humans vs. AI?",
+    subtitle = "In a recent study, writing samples from native and non-native English writers were passed to GPT detectors,\nwhich misclassified 61% of non-native English writing samples as AI-generated, compared to just 3% of native English samples.\n  ",
+    fill = "GPT Classification",
+    caption = "Data source: GPT Detectors Are Biased Against Non-Native English Writers.\nWeixin Liang, Mert Yuksekgonul, Yining Mao, Eric Wu, James Zou.") +
+  theme(
+    plot.title = element_text(size = 10, face = "bold", hjust = 0),
+    plot.subtitle = element_text(size = 7, face = "italic", hjust = 0),
+    legend.title = element_text(size = 8, face = "bold"),
+    plot.caption = element_text(size = 6),
+    strip.text = element_text(size=7, face = "bold"),
+    strip.clip = "off")
+
+```
