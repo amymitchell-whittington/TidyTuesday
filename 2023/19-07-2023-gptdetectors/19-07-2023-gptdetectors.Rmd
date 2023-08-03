@@ -103,6 +103,7 @@ geom_waffle(rows = 5, na.rm = FALSE, show.legend = TRUE, flip = FALSE, colour = 
     legend.title = element_text(size = 8, face = "bold"),
     plot.caption = element_text(size = 6),
     strip.text = element_text(size=7, face = "bold"),
-    strip.clip = "off")
-
+    strip.clip = "off",
+    plot.margin = unit(c(0.5, 0.5, 0.5, 0.5),
+                                "inches"))
 ```
