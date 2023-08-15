@@ -1,0 +1,65 @@
+---
+title: "Tidy Tuesday - Scurvy"
+author: "Amy Mitchell-Whittington"
+date: '25-07-2023'
+output: github_document
+---
+
+## Scurvy
+
+The data this week comes from the [medicaldata R package](https://higgi13425.github.io/medicaldata/). This is a data package from Peter Higgins, with 19 medical datasets for teaching Reproducible Medical Research with R.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+library(ggplot2)
+library(tidyverse)
+library(tidyr)
+library(dplyr)
+remotes::install_github('coolbutuseless/geomlime')
+library(geomlime)
+
+scurvy <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-07-25/scurvy.csv')
+
+```
+
+```{r explore, echo=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
+clean_scurvy <- scurvy %>%
+  mutate(treatment = str_replace_all(treatment, "_", " ")) %>%
+ select(-c(fit_for_duty_d6, dosing_regimen_for_scurvy)) %>% 
+  pivot_longer(-c(study_id, treatment), names_to = "symptoms") %>%
+  mutate(
+  symptoms = str_replace_all(symptoms, "_", " "),
+   symptoms = str_replace_all(symptoms, "d6", "")) %>%
+  filter(value != "0_none") %>%
+  mutate_all(str_replace_all, "1_", "") %>%
+  mutate_all(str_replace_all, "2_", "") %>%
+  mutate_all(str_replace_all, "3_", "") %>%
+  mutate_all(str_replace_all, "4_", "") 
+
+```
+
+
+```{r plot, echo=FALSE, message=FALSE, dpi = 300}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+clean_scurvy %>%
+ggplot(aes(x = symptoms, y = factor(treatment, 
+       levels = rev(levels(factor(treatment)))))) +
+  geom_line() +
+  geom_point(aes(size = value, colour = treatment)) +
+  theme_minimal() +
+  theme(legend.position = "bottom",
+        legend.title = element_blank(),
+        axis.title = element_blank(),
+        plot.title = element_text(size = 13, colour = "black", face = "bold"),
+        plot.subtitle = element_text(size = 7, colour = "black"),
+        plot.caption = element_text(size = 6, colour = "black", face = "italic"),
+        legend.background = element_rect(colour = NA, fill = NA)) +
+  guides(colour = FALSE) + # to remove colour legend 
+ labs(title = "Treating Scurvy in the 18th Century",
+       subtitle = "In 1757, it wasn't known that scurvy was a manifestation of vitamin C deficiency. A variety of remedies had been anecdotally reported,\nbut HMS Salisbury surgeon James Lind was reportedly the first to test different treatments against each other in a randomized, controlled trial.\nThis chart shows the outcomes of six treatments on 12 seamen with symptomatic scurvy, who were each selected for similar severity.",
+       caption = "Data source: A Treatise on the Scurvy in Three Parts, by James Lind.")
+```
