@@ -60,6 +60,6 @@ ggplot(aes(x = symptoms, y = factor(treatment,
         legend.background = element_rect(colour = NA, fill = NA)) +
   guides(colour = FALSE) + # to remove colour legend 
  labs(title = "Treating Scurvy in the 18th Century",
-       subtitle = "In 1757, it wasn't known that scurvy was a manifestation of vitamin C deficiency. A variety of remedies had been anecdotally reported,\nbut HMS Salisbury surgeon James Lind was reportedly the first to test different treatments against each other in a randomized, controlled trial.\nThis chart shows the outcomes of six treatments on 12 seamen with symptomatic scurvy, who were each selected for similar severity.",
+       subtitle = "In 1757, it wasn't known that scurvy was a manifestation of vitamin C deficiency. A variety of remedies had been\nanecdotally reported, but HMS Salisbury surgeon James Lind was reportedly the first to test different treatments\nagainst each other in a randomized, controlled trial. This chart shows the outcomes of six treatments\non 12 seamen with symptomatic scurvy, who were each selected for similar severity.",
        caption = "Data source: A Treatise on the Scurvy in Three Parts, by James Lind.")
 ```
