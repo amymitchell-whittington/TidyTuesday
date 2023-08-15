@@ -1,6 +1,10 @@
 # TidyTuesday
 This repository contains the R code used to create my visualisations for the weekly #TidyTuesday challenge. TidyTuesday is a weekly R data project. 
 
+## 25-07-2023: Scurvy
+
+![ ](https://github.com/amymitchell-whittington/TidyTuesday/blob/main/2023/25-07-2023-scurvy/25-07-2023-scurvy_files/figure-gfm/plot-1.png)
+
 ## 18-07-2023: GPT Detectors 
 
 ![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/19-07-2023-gptdetectors/19-07-2023-gptdetectors_files/figure-gfm/plot-1.png)
