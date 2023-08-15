@@ -1,7 +1,7 @@
 ---
 title: "Tidy Tuesday - GPT Detectors"
 author: "Amy Mitchell-Whittington"
-date: '27-06-2023'
+date: '19-07-2023'
 output: github_document
 ---
 
