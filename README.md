@@ -1,6 +1,10 @@
 # TidyTuesday
 This repository contains the R code used to create my visualisations for the weekly #TidyTuesday challenge. TidyTuesday is a weekly R data project. 
 
+## 08-08-2023: Hot Ones
+
+![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/08-08-2023-hotones/hot_ones_16082023.png)
+
 ## 25-07-2023: Treating Scurvy
 
 ![ ](https://github.com/amymitchell-whittington/TidyTuesday/blob/main/2023/25-07-2023-scurvy/25-07-2023-scurvy_files/figure-gfm/plot-1.png)
