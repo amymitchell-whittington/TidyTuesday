@@ -16,7 +16,7 @@ seasons <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/ti
 
 #explore ---------------------------
 
-#the average scoville rating by season and the percentage change between each season - did they get overall hotter as the seasons continued?
+#what was the average scoville rating by season and then percentage change between each season?
 
 ###note: If you want to sum every n consecutive numbers use colSums
 #If you want to sum every nth number use rowSums
@@ -33,7 +33,6 @@ av_scoville <- colSums(matrix(v, nrow=n))/10
 #to make a data.frame
 season <- c(1:21)
 av_scoville <- colSums(matrix(v, nrow=n))/10
-
 df <- data.frame(season, av_scoville)
 
 #to round percentage up to nearest integer
@@ -48,19 +47,42 @@ perc_change <- df %>%
 
 #plot ---------------------------
 
-perc_change %>%
-  ggplot(aes(x = season, y = perc_change, label = perc_change)) +
+summary(df)
+
+##average scoville score per season mapped out across all 21 seasons:
+df %>%
+  ggplot(aes(x = season, y = av_scoville)) + 
   geom_line(colour = "red") +
   geom_point(colour = "red") +
-  geom_label(
-    label="134%", 
-    x=4,
-    y=134.3,
-    label.padding = unit(0.55, "lines"), # Rectangle size around label
-    label.size = 0.10,
-    color = "yellow",
-    fill="red4",
-    hjust = -0.1) +
+  scale_y_continuous(limits = c(0, 350000), breaks = seq(0, 350000, by = 100,000)) +
+  scale_x_continuous(breaks = c(1:21)) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 16, colour = "red2", face = "bold"),
+    plot.subtitle = element_text(size = 12, colour = "red2"),
+    plot.caption = element_text(size = 6, colour = "red2", face = "italic"),
+    panel.background = element_rect(fill = "black"),
+    plot.background = element_rect(fill = "black"),
+    axis.title.x = element_text(colour = "red2", face = "bold", size = 11),
+    axis.text.x = element_text(colour = "yellow"),
+    axis.title.y = element_text(colour = "red2", face = "bold", size = 11),
+    axis.text.y = element_text(colour = "yellow"),
+    panel.grid.major.y = element_blank(),
+    panel.grid.major.x = element_line(colour = "red4", linetype = 2),
+    panel.grid.minor.y = element_blank(),
+    panel.grid.minor.x = element_blank()) +
+  labs(title = "HOT ONES \U1F525: How Spicy is Each Episode?",
+       subtitle = "Hot Ones is an American YouTube talk show, where celebrities are interviewed while eating\nchicken wings coated in increasingly hotter sauces. There are 10 sauces per episode, each with\nit's own scoville unit score - starting from as mild as 747 to as hot as 2,000,000.",
+       caption = "Data source: Wikipedia.",
+       x = "Season",
+       y = "Scoville units")
+  
+
+##% change of average scoville score season on season
+perc_change %>%
+  ggplot(aes(x = season, y = perc_change)) +
+  geom_line(colour = "red") +
+  geom_point(colour = "red") +
   geom_label(
     label="The average hot sauce scoville score per season fluctuated\ndramatically in the early seasons of the show,\nand evened out after season 7.", 
     x=8,
@@ -93,4 +115,8 @@ perc_change %>%
             caption = "Data source: Wikipedia.",
                x = "Season",
                y = "% change in average scoville units (season over season)")
+
+#save ---------------------------
+
+ggsave(paste0("hot_ones_", format(Sys.time(), "%d%m%Y"), ".png"), dpi = 320, width = 9, height = 6)
         
