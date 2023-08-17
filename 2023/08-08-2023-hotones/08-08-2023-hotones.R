@@ -7,6 +7,7 @@ library(tidyverse)
 library(tidyr)
 library(dplyr)
 library(ggtext)
+library(scales) # added this package to add commas to my y-axis for clarity.
 
 #load data set ---------------------------
 
@@ -47,53 +48,23 @@ perc_change <- df %>%
 
 #plot ---------------------------
 
-summary(df)
+a <- ifelse(df$av_scoville == 332770, "yellow", "red4") #to highlight season 5 on the graph - used in theme() below:
 
 ##average scoville score per season mapped out across all 21 seasons:
 df %>%
   ggplot(aes(x = season, y = av_scoville)) + 
   geom_line(colour = "red") +
   geom_point(colour = "red") +
-  scale_y_continuous(limits = c(0, 350000), breaks = seq(0, 350000, by = 100,000)) +
-  scale_x_continuous(breaks = c(1:21)) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 16, colour = "red2", face = "bold"),
-    plot.subtitle = element_text(size = 12, colour = "red2"),
-    plot.caption = element_text(size = 6, colour = "red2", face = "italic"),
-    panel.background = element_rect(fill = "black"),
-    plot.background = element_rect(fill = "black"),
-    axis.title.x = element_text(colour = "red2", face = "bold", size = 11),
-    axis.text.x = element_text(colour = "yellow"),
-    axis.title.y = element_text(colour = "red2", face = "bold", size = 11),
-    axis.text.y = element_text(colour = "yellow"),
-    panel.grid.major.y = element_blank(),
-    panel.grid.major.x = element_line(colour = "red4", linetype = 2),
-    panel.grid.minor.y = element_blank(),
-    panel.grid.minor.x = element_blank()) +
-  labs(title = "HOT ONES \U1F525: How Spicy is Each Episode?",
-       subtitle = "Hot Ones is an American YouTube talk show, where celebrities are interviewed while eating\nchicken wings coated in increasingly hotter sauces. There are 10 sauces per episode, each with\nit's own scoville unit score - starting from as mild as 747 to as hot as 2,000,000.",
-       caption = "Data source: Wikipedia.",
-       x = "Season",
-       y = "Scoville units")
-  
-
-##% change of average scoville score season on season
-perc_change %>%
-  ggplot(aes(x = season, y = perc_change)) +
-  geom_line(colour = "red") +
-  geom_point(colour = "red") +
   geom_label(
-    label="The average hot sauce scoville score per season fluctuated\ndramatically in the early seasons of the show,\nand evened out after season 7.", 
-    x=8,
-    y=20,
+    label="The average heat level for season 5 was 332k,\njust shy of the Habenero chili, which ranks 350k on the Scoville scale.",
+    x=6,
+    y=250000,
     label.padding = unit(0.55, "lines"), # Rectangle size around label
     label.size = 0.35,
     color = "yellow",
     fill="red4",
     hjust = 0) +
-  scale_y_continuous(limits = c(-20, 140), breaks = c(-20, 0, 20, 40, 60, 80, 100, 120, 140), labels = scales::percent_format(scale = 1)) +
-  #geom_richtext(aes(x = 8.75, y = 340, label = ""), size = 3, hjust = 0, vjust = "top", fill = NA, label.color = NA, lineheight = 1.3) +
+  scale_y_continuous(labels = comma) +
   scale_x_continuous(breaks = c(1:21)) +
   theme_minimal() +
   theme(
@@ -107,14 +78,14 @@ perc_change %>%
     axis.title.y = element_text(colour = "red2", face = "bold", size = 11),
     axis.text.y = element_text(colour = "yellow"),
     panel.grid.major.y = element_blank(),
-    panel.grid.major.x = element_line(colour = "red4", linetype = 2),
+    panel.grid.major.x = element_line(linetype = 2, colour = a),
     panel.grid.minor.y = element_blank(),
     panel.grid.minor.x = element_blank()) +
-          labs(title = "HOT ONES \U1F525",
-               subtitle = "Hot Ones is an American YouTube talk show, where celebrities are interviewed while eating\nchicken wings coated in increasingly hotter sauces. There are 10 sauces per episode, each with\nit's own scoville unit score - starting from as mild as 747 to as hot as 2,000,000.",
-            caption = "Data source: Wikipedia.",
-               x = "Season",
-               y = "% change in average scoville units (season over season)")
+  labs(title = "HOT ONES \U1F525 How Hot is Each Season?",
+       subtitle = "Hot Ones is an American YouTube talk show, where celebrities are interviewed while eating\nchicken wings coated in increasingly hotter sauces. Hot sauce heat levels are measured in\nscoville units: the higher the scoville number, the hotter the sauce.",
+       caption = "Data source: Wikipedia.",
+       x = "Season",
+       y = "Average Scoville units")
 
 #save ---------------------------
 
