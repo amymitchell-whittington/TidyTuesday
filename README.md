@@ -3,7 +3,7 @@ This repository contains the R code used to create my visualisations for the wee
 
 ## 08-08-2023: Hot Ones
 
-![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/08-08-2023-hotones/hot_ones_16082023.png)
+![ ](https://raw.githubusercontent.com/amymitchell-whittington/TidyTuesday/main/2023/08-08-2023-hotones/hot_ones_17082023.png)
 
 ## 25-07-2023: Treating Scurvy
 
